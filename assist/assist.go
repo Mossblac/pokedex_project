@@ -17,21 +17,21 @@ func CleanInput(text string) []string {
 }
 
 func CommandExit() error {
-	fmt.Printf("Closing the Pokedex... Goodbye!")
+	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 	return nil
 }
 
 type CliCommand struct {
-	name        string
-	description string
-	callback    func() error
+	Name        string
+	Description string
+	Callback    func() error
 }
 
 var CommandMap = map[string]CliCommand{
 	"exit": {
-		name:        "exit",
-		description: "EXit the Pokedex",
-		callback:    CommandExit,
+		Name:        "exit",
+		Description: "EXit the Pokedex",
+		Callback:    CommandExit,
 	},
 }

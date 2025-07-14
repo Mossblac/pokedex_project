@@ -16,6 +16,11 @@ func main() {
 		input := scanner.Text()
 		_, exists := assist.CommandMap[input]
 		if exists {
+			c := assist.CommandMap[input]
+			err := c.Callback()
+			if err != nil {
+				fmt.Println("Error:", err)
+			}
 
 		}
 
