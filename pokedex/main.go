@@ -22,8 +22,9 @@ func main() {
 				fmt.Println("Error:", err)
 			}
 
+		} else {
+			fmt.Println("Unknown command")
 		}
-
 	}
 
 }
