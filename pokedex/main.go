@@ -14,9 +14,9 @@ func main() {
 		fmt.Printf("Pokedex > ")
 		scanner.Scan()
 		input := scanner.Text()
-		_, exists := assist.CommandMap[input]
+		_, exists := assist.CommandInfo[input]
 		if exists {
-			c := assist.CommandMap[input]
+			c := assist.CommandInfo[input]
 			err := c.Callback()
 			if err != nil {
 				fmt.Println("Error:", err)
