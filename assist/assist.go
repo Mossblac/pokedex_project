@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/Mossblac/pokedexcli/internal"
 )
 
 func CleanInput(text string) []string {
@@ -32,8 +34,34 @@ func CommandHelp(*Config) error {
 	return nil
 }
 
-func CommandMap(*Config) error {
+func CommandMap(cfg *Config) error {
+	AreaInfo, err := internal.CreateGoStruct(cfg.Next)
+	if err != nil {
+		return err
+	}
+	for _, name := range AreaInfo.Results {
+		fmt.Printf("%s\n", name.Name)
+	}
+	cfg.Next = AreaInfo.Next
+	cfg.Previous = AreaInfo.Previous
 
+	return nil
+}
+
+func CommandMapb(cfg *Config) error {
+	if cfg.Previous == nil {
+		fmt.Print("your're on the first page\n")
+	} else {
+		AreaInfo, err := internal.CreateGoStruct(*cfg.Previous)
+		if err != nil {
+			return err
+		}
+		for _, name := range AreaInfo.Results {
+			fmt.Printf("%s\n", name.Name)
+		}
+		cfg.Next = AreaInfo.Next
+		cfg.Previous = AreaInfo.Previous
+	}
 	return nil
 }
 
@@ -64,6 +92,11 @@ func init() {
 			Name:        "map",
 			Description: "Displays 20 locations per call",
 			Callback:    CommandMap,
+		},
+		"mapb": {
+			Name:        "mapb",
+			Description: "Displays previous 20 entries",
+			Callback:    CommandMapb,
 		},
 	}
 
