@@ -18,13 +18,13 @@ func CleanInput(text string) []string {
 
 var CommandInfo map[string]CliCommand
 
-func CommandExit() error {
+func CommandExit(*Config) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 	return nil
 }
 
-func CommandHelp() error {
+func CommandHelp(*Config) error {
 	fmt.Printf("Welcome to the Pokedex!\nUsage:\n")
 	for _, cmd := range CommandInfo {
 		fmt.Printf("%s: %s\n", cmd.Name, cmd.Description)
@@ -32,28 +32,27 @@ func CommandHelp() error {
 	return nil
 }
 
-func CommandMap() error {
-	// each call prints 20 locations at a time
+func CommandMap(*Config) error {
+
 	return nil
 }
 
 type CliCommand struct {
 	Name        string
 	Description string
-	Callback    func() error
-	Page        *Config
+	Callback    func(*Config) error
 }
 
 type Config struct {
 	Next     string
-	Previous string
+	Previous *string
 }
 
 func init() {
 	CommandInfo = map[string]CliCommand{
 		"exit": {
 			Name:        "exit",
-			Description: "EXit the Pokedex",
+			Description: "Exit the Pokedex",
 			Callback:    CommandExit,
 		},
 		"help": {
@@ -67,4 +66,5 @@ func init() {
 			Callback:    CommandMap,
 		},
 	}
+
 }
