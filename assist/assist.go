@@ -1,11 +1,14 @@
 package assist
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/Mossblac/pokedexcli/internal"
+	"github.com/Mossblac/pokedexcli/internal/pokecache"
 )
 
 func CleanInput(text string) []string {
@@ -19,6 +22,8 @@ func CleanInput(text string) []string {
 }
 
 var CommandInfo map[string]CliCommand
+
+var cache *pokecache.Cache
 
 func CommandExit(*Config) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
@@ -35,13 +40,31 @@ func CommandHelp(*Config) error {
 }
 
 func CommandMap(cfg *Config) error {
-	AreaInfo, err := internal.CreateGoStruct(cfg.Next)
-	if err != nil {
-		return err
+	var AreaInfo internal.AreaStruct
+	Data, ok := cache.Get(cfg.Next)
+	if ok {
+		err := json.Unmarshal(Data, &AreaInfo)
+		if err != nil {
+			return err
+		}
+	} else {
+		var err error
+		AreaInfo, err = internal.CreateGoStruct(cfg.Next)
+		if err != nil {
+			return err
+		}
+
+		Data, err := json.Marshal(AreaInfo)
+		if err != nil {
+			return err
+		}
+
+		cache.Add(cfg.Next, Data)
 	}
 	for _, name := range AreaInfo.Results {
 		fmt.Printf("%s\n", name.Name)
 	}
+
 	cfg.Next = AreaInfo.Next
 	cfg.Previous = AreaInfo.Previous
 
@@ -52,9 +75,26 @@ func CommandMapb(cfg *Config) error {
 	if cfg.Previous == nil {
 		fmt.Print("your're on the first page\n")
 	} else {
-		AreaInfo, err := internal.CreateGoStruct(*cfg.Previous)
-		if err != nil {
-			return err
+		var AreaInfo internal.AreaStruct
+		Data, ok := cache.Get(*cfg.Previous)
+		if ok {
+			err := json.Unmarshal(Data, &AreaInfo)
+			if err != nil {
+				return err
+			}
+		} else {
+			var err error
+			AreaInfo, err = internal.CreateGoStruct(*cfg.Previous)
+			if err != nil {
+				return err
+			}
+
+			Data, err := json.Marshal(AreaInfo)
+			if err != nil {
+				return err
+			}
+
+			cache.Add(*cfg.Previous, Data)
 		}
 		for _, name := range AreaInfo.Results {
 			fmt.Printf("%s\n", name.Name)
@@ -100,4 +140,8 @@ func init() {
 		},
 	}
 
+}
+
+func init() {
+	cache = pokecache.NewCache(5 * time.Minute)
 }
