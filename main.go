@@ -22,8 +22,15 @@ func main() {
 		scanner.Scan()
 		input := scanner.Text()
 		words := strings.Fields(input)
-		cInput := words[0]
-		selection := words[1]
+		var cInput string
+		var selection string
+		if len(words) == 1 {
+			cInput = words[0]
+			selection = ""
+		} else {
+			cInput = words[0]
+			selection = words[1]
+		}
 		if len(words) > 2 {
 			fmt.Printf("invalid input")
 		} else {
