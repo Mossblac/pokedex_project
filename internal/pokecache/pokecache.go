@@ -28,22 +28,45 @@ type cacheEntry struct {
 	val       []byte
 }
 
-func NewCache(interval time.Duration) (c *Cache) {
-	//create a cache struct, fill out Entry map
-	//set the interval, start background tasks:
-	//reaploop
+func NewCache(interval time.Duration) *Cache {
+	c := &Cache{
+		Entry:    make(map[string]cacheEntry),
+		interval: interval,
+	}
+	go c.reapLoop()
+	return c
 }
 
-func (*Cache) add(key string, val []byte) {
-	//adds to cache
+func (c *Cache) Add(key string, val []byte) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.Entry[key] = cacheEntry{
+		createdAt: time.Now(),
+		val:       val,
+	}
+
 }
-func (*Cache) get(key string) ([]byte, bool) {
-	//obtains entry from cache
-	//true if entry was found
-	//fasle if not
+func (c *Cache) Get(key string) ([]byte, bool) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	valBytes, ok := c.Entry[key]
+	if ok {
+		return valBytes.val, true
+	}
+	return []byte{}, false
 }
 
-func (*Cache) reapLoop() {
-	//takes timer from NewCache as input
-	//removes old data after a certain amount of time
+func (c *Cache) reapLoop() {
+	ticker := time.NewTicker(c.interval)
+	defer ticker.Stop()
+	for {
+		<-ticker.C
+		c.mu.Lock()
+		now := time.Now()
+		for k, v := range c.Entry {
+			if now.Sub(v.createdAt) > c.interval {
+				delete(c.Entry, k)
+			}
+		}
+	}
 }
