@@ -110,6 +110,13 @@ func CommandMapb(cfg *Config, s string) error {
 }
 
 func CommandEx(cfg *Config, selection string) error {
+	if selection == "" {
+		fmt.Printf("invalid entry: input 'explore' and name of area to explore\n")
+	} else {
+		fmt.Printf("Exploring %s...\n", selection)
+		fmt.Printf("Found Pokemon: \n")
+
+	}
 	var Ex internal.Explore
 	baseUrl := "https://pokeapi.co/api/v2/location-area/"
 	fullUrl := baseUrl + selection
@@ -135,8 +142,7 @@ func CommandEx(cfg *Config, selection string) error {
 
 		cache.Add(fullUrl, Data)
 	}
-	fmt.Printf("Exploring %s...\n", selection)
-	fmt.Printf("Found Pokemon: \n")
+
 	pokeEncounters := Ex.PokemonEncounters
 
 	for _, pokemon := range pokeEncounters {
