@@ -25,6 +25,9 @@ var CommandInfo map[string]CliCommand
 
 var cache *pokecache.Cache
 
+//each command also accepts a string, even though "explore"
+//will be the only Command that uses it
+
 func CommandExit(*Config) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
@@ -109,10 +112,17 @@ func CommandMapb(cfg *Config) error {
 	return nil
 }
 
+//func CommandExplore(*Config, selection string) error
+
+/*"explore" triggers the callback
+using the cache- makes a call to the same
+url with name or id (selection string) added to end.
+convert response to struct to obtain info to print*/
+
 type CliCommand struct {
 	Name        string
 	Description string
-	Callback    func(*Config) error
+	Callback    func(*Config) error //change this to accept a string also
 }
 
 type Config struct {
@@ -142,6 +152,7 @@ func init() {
 			Description: "Displays previous 20 entries",
 			Callback:    CommandMapb,
 		},
+		//"explore"
 	}
 
 }

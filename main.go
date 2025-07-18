@@ -18,10 +18,15 @@ func main() {
 		fmt.Printf("Pokedex > ")
 		scanner.Scan()
 		input := scanner.Text()
-		_, exists := assist.CommandInfo[input]
+		//for words in input, input[0] is
+		//c.input use that to check if command exists
+		//anything after add to string called "selection"
+		_, exists := assist.CommandInfo[input] //c.input
 		if exists {
-			c := assist.CommandInfo[input]
-			err := c.Callback(PageInfo)
+			//"selection" is
+			//the string passed to callback
+			c := assist.CommandInfo[input] //c.input
+			err := c.Callback(PageInfo)    // pass in "selection" to match new signatures
 			if err != nil {
 				fmt.Println("Error:", err)
 			}
