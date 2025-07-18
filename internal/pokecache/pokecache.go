@@ -66,7 +66,9 @@ func (c *Cache) reapLoop() {
 		for k, v := range c.Entry {
 			if now.Sub(v.createdAt) > c.interval {
 				delete(c.Entry, k)
+
 			}
 		}
+		c.mu.Unlock()
 	}
 }
