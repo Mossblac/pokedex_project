@@ -28,13 +28,13 @@ var cache *pokecache.Cache
 //each command also accepts a string, even though "explore"
 //will be the only Command that uses it
 
-func CommandExit(*Config) error {
+func CommandExit(*Config, string) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 	return nil
 }
 
-func CommandHelp(*Config) error {
+func CommandHelp(*Config, string) error {
 	fmt.Printf("Welcome to the Pokedex!\nUsage:\n")
 	for _, cmd := range CommandInfo {
 		fmt.Printf("%s: %s\n", cmd.Name, cmd.Description)
@@ -42,7 +42,7 @@ func CommandHelp(*Config) error {
 	return nil
 }
 
-func CommandMap(cfg *Config) error {
+func CommandMap(cfg *Config, s string) error {
 	var AreaInfo internal.AreaStruct
 	Data, ok := cache.Get(cfg.Next)
 	if ok {
@@ -76,7 +76,7 @@ func CommandMap(cfg *Config) error {
 	return nil
 }
 
-func CommandMapb(cfg *Config) error {
+func CommandMapb(cfg *Config, s string) error {
 	if cfg.Previous == nil {
 		fmt.Print("your're on the first page\n")
 	} else {
@@ -112,7 +112,10 @@ func CommandMapb(cfg *Config) error {
 	return nil
 }
 
-//func CommandExplore(*Config, selection string) error
+func CommandEx(cfg *Config, selection string) error {
+	fmt.Printf("explore function called with input: %v\n", selection)
+	return nil
+}
 
 /*"explore" triggers the callback
 using the cache- makes a call to the same
@@ -122,7 +125,7 @@ convert response to struct to obtain info to print*/
 type CliCommand struct {
 	Name        string
 	Description string
-	Callback    func(*Config) error //change this to accept a string also
+	Callback    func(*Config, string) error //change this to accept a string also
 }
 
 type Config struct {
@@ -152,7 +155,11 @@ func init() {
 			Description: "Displays previous 20 entries",
 			Callback:    CommandMapb,
 		},
-		//"explore"
+		"explore": {
+			Name:        "explore",
+			Description: "type 'explore' then area to explore to list pokemon in area",
+			Callback:    CommandEx,
+		},
 	}
 
 }
