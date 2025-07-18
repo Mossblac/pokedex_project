@@ -43,11 +43,13 @@ func CommandMap(cfg *Config) error {
 	var AreaInfo internal.AreaStruct
 	Data, ok := cache.Get(cfg.Next)
 	if ok {
+		//fmt.Println("Cache Hit - using cached data")
 		err := json.Unmarshal(Data, &AreaInfo)
 		if err != nil {
 			return err
 		}
 	} else {
+		//fmt.Println("Cache MISS - making network request")
 		var err error
 		AreaInfo, err = internal.CreateGoStruct(cfg.Next)
 		if err != nil {
@@ -78,11 +80,13 @@ func CommandMapb(cfg *Config) error {
 		var AreaInfo internal.AreaStruct
 		Data, ok := cache.Get(*cfg.Previous)
 		if ok {
+			//fmt.Println("Cache Hit - using cached data")
 			err := json.Unmarshal(Data, &AreaInfo)
 			if err != nil {
 				return err
 			}
 		} else {
+			//fmt.Println("Cache MISS - making network request")
 			var err error
 			AreaInfo, err = internal.CreateGoStruct(*cfg.Previous)
 			if err != nil {
