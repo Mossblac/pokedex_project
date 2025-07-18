@@ -32,7 +32,7 @@ func main() {
 			selection = words[1]
 		}
 		if len(words) > 2 {
-			fmt.Printf("invalid input")
+			fmt.Printf("invalid input: single word only, use dashes for areas\n")
 		} else {
 			_, exists := assist.CommandInfo[cInput]
 			if exists {
