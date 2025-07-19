@@ -22,6 +22,8 @@ func CleanInput(text string) []string {
 
 }
 
+var PokeCatalogue map[string]internal.Poke
+
 var CommandInfo map[string]CliCommand
 
 var cache *pokecache.Cache
@@ -187,8 +189,11 @@ func CommandCatch(cfg *Config, selection string) error {
 
 	exp := poke.BaseExperience
 	source := rand.NewSource(time.Now().UnixNano())
+	//creates seed for random from time
 	r := rand.New(source)
+	// creates random number from seed
 	rand := r.Intn(exp)
+	// sets range of random number and outputs to rand
 
 	if rand > exp/2 {
 		fmt.Printf("%s was caught\n", selection)
@@ -198,6 +203,7 @@ func CommandCatch(cfg *Config, selection string) error {
 			},
 		}
 		fmt.Printf("%v added to pokedex!\n", PokeCatalogue)
+		// printing because you are not returning or using PokeCatalogue yet
 	} else {
 		fmt.Printf("%s escaped\n", selection)
 	}
