@@ -6,7 +6,15 @@ import (
 	"net/http"
 )
 
-// https://pokeapi.co/api/v2/location-area/
+// https://pokeapi.co/api/v2/location-area/- area url example
+// skarmory, torkoal
+//https://pokeapi.co/api/v2/pokemon/skarmory - pokemon info example url
+
+/* you can make your own struct that only has the fields you need. as long as
+the field matches the structure of the json it will unmarshal into that field,
+but anything not in your struct is ignored - see Explore struct for example of how
+to cut it down.- each key on left, needs a 'json:"identifier"' to match
+*/
 
 type AreaStruct struct {
 	Count    int     `json:"count"`
@@ -36,55 +44,10 @@ func CreateGoStruct(url string) (AreaStruct, error) {
 }
 
 type Explore struct {
-	EncounterMethodRates []struct {
-		EncounterMethod struct {
-			Name string `json:"name"`
-			URL  string `json:"url"`
-		} `json:"encounter_method"`
-		VersionDetails []struct {
-			Rate    int `json:"rate"`
-			Version struct {
-				Name string `json:"name"`
-				URL  string `json:"url"`
-			} `json:"version"`
-		} `json:"version_details"`
-	} `json:"encounter_method_rates"`
-	GameIndex int `json:"game_index"`
-	ID        int `json:"id"`
-	Location  struct {
-		Name string `json:"name"`
-		URL  string `json:"url"`
-	} `json:"location"`
-	Name  string `json:"name"`
-	Names []struct {
-		Language struct {
-			Name string `json:"name"`
-			URL  string `json:"url"`
-		} `json:"language"`
-		Name string `json:"name"`
-	} `json:"names"`
 	PokemonEncounters []struct {
 		Pokemon struct {
 			Name string `json:"name"`
-			URL  string `json:"url"`
 		} `json:"pokemon"`
-		VersionDetails []struct {
-			EncounterDetails []struct {
-				Chance          int   `json:"chance"`
-				ConditionValues []any `json:"condition_values"`
-				MaxLevel        int   `json:"max_level"`
-				Method          struct {
-					Name string `json:"name"`
-					URL  string `json:"url"`
-				} `json:"method"`
-				MinLevel int `json:"min_level"`
-			} `json:"encounter_details"`
-			MaxChance int `json:"max_chance"`
-			Version   struct {
-				Name string `json:"name"`
-				URL  string `json:"url"`
-			} `json:"version"`
-		} `json:"version_details"`
 	} `json:"pokemon_encounters"`
 }
 
@@ -103,4 +66,24 @@ func CreateExploreStruct(url string) (Explore, error) {
 	}
 	return ex, nil
 
+}
+
+type Poke struct {
+	BaseExperience int `json:"base_experience"`
+}
+
+func CreatePokeStruct(url string) (Poke, error) {
+	var poke Poke
+	res, err := http.Get(url)
+	if err != nil {
+		return Poke{}, fmt.Errorf("error obtaining response from http")
+	}
+
+	defer res.Body.Close()
+
+	decoder := json.NewDecoder(res.Body)
+	if err := decoder.Decode(&poke); err != nil {
+		return Poke{}, fmt.Errorf("error decoding resposne")
+	}
+	return poke, nil
 }
