@@ -3,6 +3,7 @@ package assist
 import (
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"os"
 	"strings"
 	"time"
@@ -151,6 +152,59 @@ func CommandEx(cfg *Config, selection string) error {
 	return nil
 }
 
+func CommandCatch(cfg *Config, selection string) error {
+	if selection == "" {
+		fmt.Printf("invalid entry: input 'catch' and name of pokemon\n")
+	} else {
+		fmt.Printf("Throwing a Pokeball at %s...\n", selection)
+	}
+	var poke internal.Poke
+	pUrl := "https://pokeapi.co/api/v2/pokemon/"
+	fullUrl := pUrl + selection
+	Data, ok := cache.Get(fullUrl)
+	if ok {
+		err := json.Unmarshal(Data, &poke)
+		if err != nil {
+			return err
+		}
+
+	} else {
+
+		var err error
+		poke, err = internal.CreatePokeStruct(fullUrl)
+		if err != nil {
+			return err
+		}
+
+		Data, err := json.Marshal(poke)
+		if err != nil {
+			return err
+		}
+
+		cache.Add(fullUrl, Data)
+	}
+	var PokeCatalogue map[string]internal.Poke
+
+	exp := poke.BaseExperience
+	source := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(source)
+	rand := r.Intn(exp)
+
+	if rand > exp/2 {
+		fmt.Printf("%s was caught\n", selection)
+		PokeCatalogue = map[string]internal.Poke{
+			selection: {
+				BaseExperience: exp,
+			},
+		}
+		fmt.Printf("%v added to pokedex!\n", PokeCatalogue)
+	} else {
+		fmt.Printf("%s escaped\n", selection)
+	}
+
+	return nil
+}
+
 type CliCommand struct {
 	Name        string
 	Description string
@@ -188,6 +242,11 @@ func init() {
 			Name:        "explore",
 			Description: "type 'explore' then area to explore to list pokemon in area",
 			Callback:    CommandEx,
+		},
+		"catch": {
+			Name:        "catch",
+			Description: "type 'catch' then name of pokemon to throw pokeball",
+			Callback:    CommandCatch,
 		},
 	}
 }
