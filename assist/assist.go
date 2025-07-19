@@ -185,7 +185,6 @@ func CommandCatch(cfg *Config, selection string) error {
 
 		cache.Add(fullUrl, Data)
 	}
-	var PokeCatalogue map[string]internal.Poke
 
 	exp := poke.BaseExperience
 	source := rand.NewSource(time.Now().UnixNano())
@@ -198,12 +197,8 @@ func CommandCatch(cfg *Config, selection string) error {
 	if rand > exp/2 {
 		fmt.Printf("%s was caught\n", selection)
 		PokeCatalogue = map[string]internal.Poke{
-			selection: {
-				BaseExperience: exp,
-			},
+			selection: poke,
 		}
-		fmt.Printf("%v added to pokedex!\n", PokeCatalogue)
-		// printing because you are not returning or using PokeCatalogue yet
 	} else {
 		fmt.Printf("%s escaped\n", selection)
 	}
