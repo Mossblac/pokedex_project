@@ -348,16 +348,16 @@ type Poke struct {
 			} `json:"generation-viii"`
 		} `json:"versions"`
 	} `json:"sprites"`
-	Stats []struct {
-		BaseStat int `json:"base_stat"`
-		Effort   int `json:"effort"`
-		Stat     struct {
+	Stats []struct { //stats is a list of structs
+		BaseStat int      `json:"base_stat"` //[0] hp, [1] attack, [2] defense
+		Effort   int      `json:"effort"`    //[3] special-attack, [4] special-defense
+		Stat     struct { //[5] speed
 			Name string `json:"name"`
 			URL  string `json:"url"`
 		} `json:"stat"`
 	} `json:"stats"`
-	Types []struct {
-		Slot int `json:"slot"`
+	Types []struct { //Types is a list of structs,
+		Slot int `json:"slot"` //Type is a struct, Type.Name is types info
 		Type struct {
 			Name string `json:"name"`
 			URL  string `json:"url"`
