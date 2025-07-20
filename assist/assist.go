@@ -196,9 +196,8 @@ func CommandCatch(cfg *Config, selection string) error {
 
 	if rand > exp/2 {
 		fmt.Printf("%s was caught\n", selection)
-		PokeCatalogue = map[string]internal.Poke{
-			selection: poke,
-		}
+		fmt.Printf("learn more with inspect command\n")
+		PokeCatalogue[selection] = poke
 	} else {
 		fmt.Printf("%s escaped\n", selection)
 	}
@@ -222,6 +221,17 @@ func CommandInspect(cfg *Config, selection string) error {
 		fmt.Printf("Types:\n")
 		for i := range key.Types {
 			fmt.Printf("  -%v\n", key.Types[i].Type.Name)
+		}
+	}
+	return nil
+}
+
+func CommandPokedex(cfg *Config, selection string) error {
+	for key := range PokeCatalogue {
+		if len(key) == 0 {
+			fmt.Printf("no pokemon captured")
+		} else {
+			fmt.Printf("  -%v\n", key)
 		}
 	}
 	return nil
@@ -275,9 +285,18 @@ func init() {
 			Description: "type 'inspect' then name of caught pokemon to get stats",
 			Callback:    CommandInspect,
 		},
+		"pokedex": {
+			Name:        "pokedex",
+			Description: "view list of captured pokemon",
+			Callback:    CommandPokedex,
+		},
 	}
 }
 
 func init() {
 	cache = pokecache.NewCache(5 * time.Minute)
+}
+
+func init() {
+	PokeCatalogue = make(map[string]internal.Poke)
 }
